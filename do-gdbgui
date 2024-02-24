@@ -1,0 +1,1 @@
+poetry run gdbgui --gdb $(which arm-none-eabi-gdb) $@

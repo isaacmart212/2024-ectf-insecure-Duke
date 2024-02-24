@@ -1,0 +1,1 @@
+ectf_build_comp -d . -on comp1 -od build -id 0x11111124 -b "Component duke boot1" -al "Durham" -ad "02/22/24" -ac "Bletsch"

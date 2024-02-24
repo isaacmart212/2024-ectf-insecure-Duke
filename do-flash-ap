@@ -1,0 +1,1 @@
+ectf_update --infile build/ap.img --port /dev/ttyACM0

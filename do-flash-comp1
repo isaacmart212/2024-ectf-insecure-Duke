@@ -1,0 +1,1 @@
+ectf_update --infile build/comp1.img --port /dev/ttyACM0

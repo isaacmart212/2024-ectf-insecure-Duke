@@ -1,0 +1,4 @@
+./do-build-deployment && \
+./do-build-ap && \
+./do-build-comp1 && \
+./do-build-comp2
