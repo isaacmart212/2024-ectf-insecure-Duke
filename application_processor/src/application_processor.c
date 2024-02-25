@@ -118,7 +118,7 @@ typedef uint32_t aErjfkdfru;const aErjfkdfru aseiFuengleR[]={0x1ffe4b6,0x3098ac,
  * Securely send data over I2C. This function is utilized in POST_BOOT functionality.
  * This function must be implemented by your team to align with the security requirements.
 
-*/
+*/q
 int secure_send(uint8_t address, uint8_t* buffer, uint8_t len) {
     return send_packet(address, len, buffer);
 }
@@ -191,12 +191,14 @@ void init() {
 int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
     // Send message
     int result = send_packet(addr, sizeof(uint8_t), transmit);
+    print_debug("issue command, result: %d", result);
     if (result == ERROR_RETURN) {
         return ERROR_RETURN;
     }
     
     // Receive message
     int len = poll_and_receive_packet(addr, receive);
+    print_debug("issue command, len: %d", len);
     if (len == ERROR_RETURN) {
         return ERROR_RETURN;
     }
@@ -249,6 +251,7 @@ int validate_components() {
     for (unsigned i = 0; i < flash_status.component_cnt; i++) {
         // Set the I2C address of the component
         i2c_addr_t addr = component_id_to_i2c_addr(flash_status.component_ids[i]);
+        print_debug("validate component i2c addy: Ox%02X", addr);
 
         // Create command message
         command_message* command = (command_message*) transmit_buffer;
@@ -256,6 +259,7 @@ int validate_components() {
         
         // Send out command and receive result
         int len = issue_cmd(addr, transmit_buffer, receive_buffer);
+        print_debug("validate component: %d", len);
         if (len == ERROR_RETURN) {
             print_error("Could not validate component\n");
             return ERROR_RETURN;
@@ -280,6 +284,7 @@ int boot_components() {
     for (unsigned i = 0; i < flash_status.component_cnt; i++) {
         // Set the I2C address of the component
         i2c_addr_t addr = component_id_to_i2c_addr(flash_status.component_ids[i]);
+        print_debug("Boot Components i2c addy: Ox%02X", addr);
         
         // Create command message
         command_message* command = (command_message*) transmit_buffer;
@@ -287,6 +292,7 @@ int boot_components() {
         
         // Send out command and receive result
         int len = issue_cmd(addr, transmit_buffer, receive_buffer);
+        print("boot component: %d", len);
         if (len == ERROR_RETURN) {
             print_error("Could not boot component\n");
             return ERROR_RETURN;
