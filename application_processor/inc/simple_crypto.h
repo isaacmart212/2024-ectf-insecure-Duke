@@ -11,7 +11,7 @@
  * @copyright Copyright (c) 2024 The MITRE Corporation
  */
 
-#if CRYPTO_EXAMPLE
+#if 1 // CRYPTO_EXAMPLE //tkb: why did they if gate this to CRYPTO_EXAMPLE ??? its crazy
 #ifndef ECTF_CRYPTO_H
 #define ECTF_CRYPTO_H
 

@@ -172,7 +172,6 @@ void init() {
     // Write Component IDs from flash if first boot e.g. flash unwritten
     if (flash_status.flash_magic != FLASH_MAGIC) {
         print_debug("First boot, setting flash!\n");
-        print_debug("CS391 Gangggg\n");
 
         flash_status.flash_magic = FLASH_MAGIC;
         flash_status.component_cnt = COMPONENT_CNT;
@@ -185,6 +184,7 @@ void init() {
     
     // Initialize board link interface
     board_link_init();
+
 }
 
 // Send a command to a component and receive the result
@@ -192,12 +192,15 @@ int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
     // Send message
     int result = send_packet(addr, sizeof(uint8_t), transmit);
     if (result == ERROR_RETURN) {
+		print_debug("duke: send failed\n");
         return ERROR_RETURN;
     }
     
+	print_debug("duke: try recv\n");
     // Receive message
     int len = poll_and_receive_packet(addr, receive);
     if (len == ERROR_RETURN) {
+		print_debug("duke: recv failed\n");
         return ERROR_RETURN;
     }
     return len;
@@ -407,6 +410,35 @@ int validate_token() {
     return ERROR_RETURN;
 }
 
+// tkb crypto test
+void test_crypto() {
+    char* data = "Crypto Example!";
+    uint8_t ciphertext[BLOCK_SIZE];
+    uint8_t key[KEY_SIZE];
+    
+    // Zero out the key
+    bzero(key, BLOCK_SIZE);
+
+    // Encrypt example data and print out
+    encrypt_sym((uint8_t*)data, BLOCK_SIZE, key, ciphertext); 
+    print_debug("Encrypted data: ");
+    print_hex_debug(ciphertext, BLOCK_SIZE);
+
+    // Hash example encryption results 
+    uint8_t hash_out[HASH_SIZE];
+    hash(ciphertext, BLOCK_SIZE, hash_out);
+
+    // Output hash result
+    print_debug("Hash result: ");
+    print_hex_debug(hash_out, HASH_SIZE);
+    
+    // Decrypt the encrypted message and print out
+    uint8_t decrypted[BLOCK_SIZE];
+    decrypt_sym(ciphertext, BLOCK_SIZE, key, decrypted);
+    print_debug("Decrypted message: %s\r\n", decrypted);
+
+}
+
 // Boot the components and board if the components validate
 void attempt_boot() {
     if (validate_components()) {
@@ -428,6 +460,7 @@ void attempt_boot() {
     print_debug("%s\n", flag);
     // Print boot message
     // This always needs to be printed when booting
+    test_crypto();
     print_info("AP>%s\n", AP_BOOT_MSG);
     print_success("Boot\n");
     // Boot
@@ -508,6 +541,8 @@ int main() {
             attempt_boot();
         } else if (!strcmp(buf, "replace")) {
             attempt_replace();
+        } else if (!strcmp(buf, "duke")) {
+            test_crypto(); //tkb
         } else if (!strcmp(buf, "attest")) {
             attempt_attest();
         } else {
