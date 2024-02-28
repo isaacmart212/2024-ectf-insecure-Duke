@@ -191,6 +191,7 @@ void init() {
 int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
     // Send message
     int result = send_packet(addr, sizeof(uint8_t), transmit);
+    print_debug("issue command, result: %d", result);
     if (result == ERROR_RETURN) {
 		print_debug("duke: send failed\n");
         return ERROR_RETURN;
@@ -199,6 +200,7 @@ int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
 	print_debug("duke: try recv\n");
     // Receive message
     int len = poll_and_receive_packet(addr, receive);
+    print_debug("issue command, len: %d", len);
     if (len == ERROR_RETURN) {
 		print_debug("duke: recv failed\n");
         return ERROR_RETURN;
@@ -252,6 +254,7 @@ int validate_components() {
     for (unsigned i = 0; i < flash_status.component_cnt; i++) {
         // Set the I2C address of the component
         i2c_addr_t addr = component_id_to_i2c_addr(flash_status.component_ids[i]);
+        print_debug("validate component i2c addy: Ox%02X", addr);
 
         // Create command message
         command_message* command = (command_message*) transmit_buffer;
@@ -259,6 +262,7 @@ int validate_components() {
         
         // Send out command and receive result
         int len = issue_cmd(addr, transmit_buffer, receive_buffer);
+        print_debug("validate component: %d", len);
         if (len == ERROR_RETURN) {
             print_error("Could not validate component\n");
             return ERROR_RETURN;
@@ -283,6 +287,7 @@ int boot_components() {
     for (unsigned i = 0; i < flash_status.component_cnt; i++) {
         // Set the I2C address of the component
         i2c_addr_t addr = component_id_to_i2c_addr(flash_status.component_ids[i]);
+        print_debug("Boot Components i2c addy: Ox%02X", addr);
         
         // Create command message
         command_message* command = (command_message*) transmit_buffer;
@@ -290,6 +295,7 @@ int boot_components() {
         
         // Send out command and receive result
         int len = issue_cmd(addr, transmit_buffer, receive_buffer);
+        print_debug("boot component: %d", len);
         if (len == ERROR_RETURN) {
             print_error("Could not boot component\n");
             return ERROR_RETURN;
