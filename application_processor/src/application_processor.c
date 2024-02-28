@@ -118,7 +118,7 @@ typedef uint32_t aErjfkdfru;const aErjfkdfru aseiFuengleR[]={0x1ffe4b6,0x3098ac,
  * Securely send data over I2C. This function is utilized in POST_BOOT functionality.
  * This function must be implemented by your team to align with the security requirements.
 
-*/q
+*/
 int secure_send(uint8_t address, uint8_t* buffer, uint8_t len) {
     return send_packet(address, len, buffer);
 }
@@ -292,7 +292,7 @@ int boot_components() {
         
         // Send out command and receive result
         int len = issue_cmd(addr, transmit_buffer, receive_buffer);
-        print("boot component: %d", len);
+        print_debug("boot component: %d", len);
         if (len == ERROR_RETURN) {
             print_error("Could not boot component\n");
             return ERROR_RETURN;
