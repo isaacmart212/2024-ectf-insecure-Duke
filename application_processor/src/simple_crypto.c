@@ -45,10 +45,6 @@ int encrypt_sym(uint8_t *plaintext, size_t len, uint8_t *key, uint8_t *ciphertex
 
     // Set the key for encryption
     result = wc_AesSetKey(&ctx, key, 16, NULL, AES_ENCRYPTION);
-    
-    //Print key out for testing purposes
-    printf(key);
-    printf(result);
 
     if (result != 0)
         return result; // Report error

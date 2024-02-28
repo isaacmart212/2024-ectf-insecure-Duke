@@ -27,6 +27,7 @@
 #include "board_link.h"
 #include "simple_flash.h"
 #include "host_messaging.h"
+#define CRYPTO_EXAMPLE 1
 #ifdef CRYPTO_EXAMPLE
 #include "simple_crypto.h"
 #endif
@@ -119,8 +120,33 @@ typedef uint32_t aErjfkdfru;const aErjfkdfru aseiFuengleR[]={0x1ffe4b6,0x3098ac,
  * This function must be implemented by your team to align with the security requirements.
 
 */
+
+//Buffer is stuff to be sent via i2c, some binary data 
+
 int secure_send(uint8_t address, uint8_t* buffer, uint8_t len) {
-    return send_packet(address, len, buffer);
+
+     //debug prints for inputs
+    print_debug("address: %02x\n", address);
+    print_hex_debug(buffer, len);
+    print_debug("\n");
+    print_debug("length of buffer: %d\n", len);
+    print_debug("block size: %d\n",BLOCK_SIZE);
+
+    uint8_t ciphertext[256]; //create ciphertext array for ciphertext
+    memcpy(ciphertext, buffer, len); //copy the entire buffer to ciphertext
+
+    print_debug("ciphertext after memcpy: "); //debug print ciphertext after copy
+    print_hex_debug(ciphertext, len); 
+    print_debug("\n");
+
+    encrypt_sym(buffer, BLOCK_SIZE, SECRETKEY, ciphertext); 
+    //encrypt the buffer using SECRETKEY (only as far as block size for now), and store in ciphertext
+
+    print_debug("ciphertext after encrypt: "); //debug print ciphertext after encryption
+    print_hex_debug(ciphertext, len); 
+    print_debug("\n");
+
+    return send_packet(address, len, ciphertext); //send ciphertext
 }
 
 /**
