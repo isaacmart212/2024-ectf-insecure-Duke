@@ -55,6 +55,7 @@ int send_packet(i2c_addr_t address, uint8_t len, uint8_t* packet) {
     if (result < SUCCESS_RETURN) {
         return ERROR_RETURN;
     }
+  // Wrapper around here encrypt this packet
     result = i2c_simple_write_data_generic(address, RECEIVE, len, packet);
     if (result < SUCCESS_RETURN) {
         return ERROR_RETURN;

@@ -31,6 +31,10 @@
  *
  * @return 0 on success, -1 on bad length, other non-zero for other error
  */
+
+ //AES, bit of weakness here no authentitatication, just encrypting. if someone messes w msg (flip one bit, decrypt is garbo)
+ // Add some hashing to prove the msg received is the one that was intedned to be sent
+ //  
 int encrypt_sym(uint8_t *plaintext, size_t len, uint8_t *key, uint8_t *ciphertext) {
     Aes ctx; // Context for encryption
     int result; // Library result
@@ -41,10 +45,6 @@ int encrypt_sym(uint8_t *plaintext, size_t len, uint8_t *key, uint8_t *ciphertex
 
     // Set the key for encryption
     result = wc_AesSetKey(&ctx, key, 16, NULL, AES_ENCRYPTION);
-    
-    //Print key out for testing purposes
-    printf(key);
-    printf(result);
 
     if (result != 0)
         return result; // Report error
@@ -104,6 +104,8 @@ int decrypt_sym(uint8_t *ciphertext, size_t len, uint8_t *key, uint8_t *plaintex
  *
  * @return 0 on success, non-zero for other error
  */
+
+
 int hash(void *data, size_t len, uint8_t *hash_out) {
     // Pass values to hash
     return wc_Md5Hash((uint8_t *)data, len, hash_out);
