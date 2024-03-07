@@ -110,6 +110,10 @@ void secure_send(uint8_t* buffer, uint8_t len) {
  * This function must be implemented by your team to align with the security requirements.
 */
 int secure_receive(uint8_t* buffer) {
+    int result = decrypt_sym();
+    if(result == 0){
+        return -1;
+    }
     return wait_and_receive_packet(buffer);
 }
 
@@ -217,7 +221,7 @@ int main(void) {
     LED_On(LED2);
 
     while (1) {
-        wait_and_receive_packet(receive_buffer);
+        secure_receive(receive_buffer);
 
         component_process_cmd();
     }
