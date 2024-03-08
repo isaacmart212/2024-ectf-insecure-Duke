@@ -222,7 +222,7 @@ int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
     // Send message
     //Edited here --> Trying to see if secure send can work in place
     //int result = send_packet(addr, sizeof(uint8_t), transmit);
-    int result = secure_send(addr, sizeof(uint8_t), transmit);
+    int result = secure_send(addr, transmit, sizeof(uint8_t));
     print_debug("issue command, result: %d", result);
     if (result == ERROR_RETURN) {
 		print_debug("duke: send failed\n");
