@@ -110,6 +110,11 @@ void secure_send(uint8_t* buffer, uint8_t len) {
  * Securely receive data over I2C. This function is utilized in POST_BOOT functionality.
  * This function must be implemented by your team to align with the security requirements.
 */
+
+// unt8_t ciphertext_recv[256];
+// wait_and_recv(ciphertext_recv);
+// deccrypt(ciphertext_recv, AESBLOCK, GLOBALKEY, buffer)
+// before decript: memcpy(from ciphertext_rcv into buffer, len= I2C_MAX_LEN)
 int secure_receive(uint8_t* buffer) {
 
 
@@ -227,9 +232,10 @@ int main(void) {
     
     LED_On(LED2);
 
+    decrypt_sym(NULL, 0, NULL, NULL);
+
     while (1) {
         int length = secure_receive(receive_buffer);
-
         component_process_cmd();
     }
 }
