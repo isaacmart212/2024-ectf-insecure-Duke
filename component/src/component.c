@@ -85,6 +85,7 @@ void process_attest(void);
 uint8_t receive_buffer[MAX_I2C_MESSAGE_LEN];
 uint8_t transmit_buffer[MAX_I2C_MESSAGE_LEN];
 
+
 /******************************* POST BOOT FUNCTIONALITY *********************************/
 /**
  * @brief Secure Send 
@@ -110,11 +111,17 @@ void secure_send(uint8_t* buffer, uint8_t len) {
  * This function must be implemented by your team to align with the security requirements.
 */
 int secure_receive(uint8_t* buffer) {
-    int result = decrypt_sym();
-    if(result == 0){
+
+
+    int len = wait_and_receive_packet(buffer);
+    uint8_t ciphertext[256] = {0};        //create ciphertext array for ciphertext
+    memcpy(ciphertext, buffer, len);     //copy the entire buffer to ciphertext
+    int result = decrypt_sym(ciphertext, BLOCK_SIZE, SECRETKEY, buffer);
+
+    if(result == -1){
         return -1;
     }
-    return wait_and_receive_packet(buffer);
+    return len;
 }
 
 /******************************* FUNCTION DEFINITIONS *********************************/
@@ -221,7 +228,7 @@ int main(void) {
     LED_On(LED2);
 
     while (1) {
-        secure_receive(receive_buffer);
+        int length = secure_receive(receive_buffer);
 
         component_process_cmd();
     }
