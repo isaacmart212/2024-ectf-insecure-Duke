@@ -1,5 +1,8 @@
 ## Project .gitignore ##
 
+global_secrets.h
+
+
 .DS_Store
 .vscode/
 **/gcc
