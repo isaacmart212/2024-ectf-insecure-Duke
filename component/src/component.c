@@ -19,6 +19,7 @@
 #include "nvic_table.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include "simple_crypto.h"
 #include <string.h>
 
 #include "simple_i2c_peripheral.h"
