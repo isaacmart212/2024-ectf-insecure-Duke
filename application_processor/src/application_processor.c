@@ -223,7 +223,7 @@ int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
     //Edited here --> Trying to see if secure send can work in place
     //int result = send_packet(addr, sizeof(uint8_t), transmit);
     int result = secure_send(addr, transmit, sizeof(uint8_t));
-    print_debug("issue command, result: %d", result);
+    print_debug("issue command, result: %d\n", result);
     if (result == ERROR_RETURN) {
 		print_debug("duke: send failed\n");
         return ERROR_RETURN;
@@ -232,7 +232,7 @@ int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
 	print_debug("duke: try recv\n");
     // Receive message
     int len = poll_and_receive_packet(addr, receive);
-    print_debug("issue command, len: %d", len);
+    print_debug("issue command, len: %d\n", len);
     if (len == ERROR_RETURN) {
 		print_debug("duke: recv failed\n");
         return ERROR_RETURN;
