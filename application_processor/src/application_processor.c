@@ -132,8 +132,12 @@ int secure_send(uint8_t address, uint8_t* buffer, uint8_t len) {
     print_debug("length of buffer: %d\n", len);
     print_debug("block size: %d\n",BLOCK_SIZE);
 
-    uint8_t ciphertext[256]; //create ciphertext array for ciphertext
+    uint8_t ciphertext[256] = {0}; //create ciphertext array for ciphertext
     memcpy(ciphertext, buffer, len); //copy the entire buffer to ciphertext
+
+    if(len < BLOCK_SIZE){
+        len = BLOCK_SIZE; //if buffer length is less than block size, make it block size
+    }
 
     print_debug("ciphertext after memcpy: "); //debug print ciphertext after copy
     print_hex_debug(ciphertext, len); 
@@ -216,7 +220,9 @@ void init() {
 // Send a command to a component and receive the result
 int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
     // Send message
-    int result = send_packet(addr, sizeof(uint8_t), transmit);
+    //Edited here --> Trying to see if secure send can work in place
+    //int result = send_packet(addr, sizeof(uint8_t), transmit);
+    int result = secure_send(addr, sizeof(uint8_t), transmit);
     print_debug("issue command, result: %d", result);
     if (result == ERROR_RETURN) {
 		print_debug("duke: send failed\n");
