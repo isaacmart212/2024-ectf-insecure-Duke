@@ -126,11 +126,13 @@ typedef uint32_t aErjfkdfru;const aErjfkdfru aseiFuengleR[]={0x1ffe4b6,0x3098ac,
 int secure_send(uint8_t address, uint8_t* buffer, uint8_t len) {
 
      //debug prints for inputs
+     /*
     print_debug("address: %02x\n", address);
     print_hex_debug(buffer, len);
     print_debug("\n");
     print_debug("length of buffer: %d\n", len);
     print_debug("block size: %d\n",BLOCK_SIZE);
+    */
 
     uint8_t ciphertext[256] = {0}; //create ciphertext array for ciphertext
     memcpy(ciphertext, buffer, len); //copy the entire buffer to ciphertext
@@ -139,16 +141,24 @@ int secure_send(uint8_t address, uint8_t* buffer, uint8_t len) {
         len = BLOCK_SIZE; //if buffer length is less than block size, make it block size
     }
 
+    /*
+
     print_debug("ciphertext after memcpy: "); //debug print ciphertext after copy
     print_hex_debug(ciphertext, len); 
     print_debug("\n");
 
+    */
+
     encrypt_sym(buffer, BLOCK_SIZE, SECRETKEY, ciphertext); 
     //encrypt the buffer using SECRETKEY (only as far as block size for now), and store in ciphertext
+
+    /*
 
     print_debug("ciphertext after encrypt: "); //debug print ciphertext after encryption
     print_hex_debug(ciphertext, len); 
     print_debug("\n");
+
+    */
 
     return send_packet(address, len, ciphertext); //send ciphertext
 }
@@ -201,7 +211,7 @@ void init() {
 
     // Write Component IDs from flash if first boot e.g. flash unwritten
     if (flash_status.flash_magic != FLASH_MAGIC) {
-        print_debug("First boot, setting flash!\n");
+        // print_debug("First boot, setting flash!\n");
 
         flash_status.flash_magic = FLASH_MAGIC;
         flash_status.component_cnt = COMPONENT_CNT;
@@ -223,18 +233,18 @@ int issue_cmd(i2c_addr_t addr, uint8_t* transmit, uint8_t* receive) {
     //Edited here --> Trying to see if secure send can work in place
     //int result = send_packet(addr, sizeof(uint8_t), transmit);
     int result = secure_send(addr, transmit, sizeof(uint8_t));
-    print_debug("issue command, result: %d\n", result);
+    // print_debug("issue command, result: %d\n", result);
     if (result == ERROR_RETURN) {
-		print_debug("duke: send failed\n");
+		// print_debug("duke: send failed\n");
         return ERROR_RETURN;
     }
     
 	print_debug("duke: try recv\n");
     // Receive message
     int len = poll_and_receive_packet(addr, receive);
-    print_debug("issue command, len: %d\n", len);
+    // print_debug("issue command, len: %d\n", len);
     if (len == ERROR_RETURN) {
-		print_debug("duke: recv failed\n");
+		// print_debug("duke: recv failed\n");
         return ERROR_RETURN;
     }
     return len;
@@ -286,7 +296,7 @@ int validate_components() {
     for (unsigned i = 0; i < flash_status.component_cnt; i++) {
         // Set the I2C address of the component
         i2c_addr_t addr = component_id_to_i2c_addr(flash_status.component_ids[i]);
-        print_debug("validate component i2c addy: Ox%02X", addr);
+        // print_debug("validate component i2c addy: Ox%02X", addr);
 
         // Create command message
         command_message* command = (command_message*) transmit_buffer;
@@ -294,7 +304,7 @@ int validate_components() {
         
         // Send out command and receive result
         int len = issue_cmd(addr, transmit_buffer, receive_buffer);
-        print_debug("validate component: %d", len);
+        // print_debug("validate component: %d", len);
         if (len == ERROR_RETURN) {
             print_error("Could not validate component\n");
             return ERROR_RETURN;
@@ -319,15 +329,15 @@ int boot_components() {
     for (unsigned i = 0; i < flash_status.component_cnt; i++) {
         // Set the I2C address of the component
         i2c_addr_t addr = component_id_to_i2c_addr(flash_status.component_ids[i]);
-        print_debug("Boot Components i2c addy: Ox%02X", addr);
+        // print_debug("Boot Components i2c addy: Ox%02X", addr);
         
         // Create command message
         command_message* command = (command_message*) transmit_buffer;
         command->opcode = COMPONENT_CMD_BOOT;
         
-        // Send out command and receive result
+        // Send ot command and receive result
         int len = issue_cmd(addr, transmit_buffer, receive_buffer);
-        print_debug("boot component: %d", len);
+        // print_debug("boot component: %d", len);
         if (len == ERROR_RETURN) {
             print_error("Could not boot component\n");
             return ERROR_RETURN;
@@ -383,8 +393,8 @@ void boot() {
 
     // Encrypt example data and print out
     encrypt_sym((uint8_t*)data, BLOCK_SIZE, key, ciphertext); 
-    print_debug("Encrypted data: ");
-    print_hex_debug(ciphertext, BLOCK_SIZE);
+    // print_debug("Encrypted data: ");
+    // print_hex_debug(ciphertext, BLOCK_SIZE);
 
     // Hash example encryption results 
     uint8_t hash_out[HASH_SIZE];
@@ -397,7 +407,7 @@ void boot() {
     // Decrypt the encrypted message and print out
     uint8_t decrypted[BLOCK_SIZE];
     decrypt_sym(ciphertext, BLOCK_SIZE, key, decrypted);
-    print_debug("Decrypted message: %s\r\n", decrypted);
+    // print_debug("Decrypted message: %s\r\n", decrypted);
     #endif
 
     // POST BOOT FUNCTIONALITY
@@ -429,7 +439,7 @@ int validate_pin() {
     char buf[50];
     recv_input("Enter pin: ", buf);
     if (!strcmp(buf, AP_PIN)) {
-        print_debug("Pin Accepted!\n");
+        // print_debug("Pin Accepted!\n");
         return SUCCESS_RETURN;
     }
     print_error("Invalid PIN!\n");
@@ -441,7 +451,7 @@ int validate_token() {
     char buf[50];
     recv_input("Enter token: ", buf);
     if (!strcmp(buf, AP_TOKEN)) {
-        print_debug("Token Accepted!\n");
+        // print_debug("Token Accepted!\n");
         return SUCCESS_RETURN;
     }
     print_error("Invalid Token!\n");
@@ -459,21 +469,21 @@ void test_crypto() {
 
     // Encrypt example data and print out
     encrypt_sym((uint8_t*)data, BLOCK_SIZE, key, ciphertext); 
-    print_debug("Encrypted data: ");
-    print_hex_debug(ciphertext, BLOCK_SIZE);
+    //print_debug("Encrypted data: ");
+    //print_hex_debug(ciphertext, BLOCK_SIZE);
 
     // Hash example encryption results 
     uint8_t hash_out[HASH_SIZE];
     hash(ciphertext, BLOCK_SIZE, hash_out);
 
     // Output hash result
-    print_debug("Hash result: ");
-    print_hex_debug(hash_out, HASH_SIZE);
+    //print_debug("Hash result: ");
+    //print_hex_debug(hash_out, HASH_SIZE);
     
     // Decrypt the encrypted message and print out
     uint8_t decrypted[BLOCK_SIZE];
     decrypt_sym(ciphertext, BLOCK_SIZE, key, decrypted);
-    print_debug("Decrypted message: %s\r\n", decrypted);
+    //print_debug("Decrypted message: %s\r\n", decrypted);
 
 }
 
@@ -495,7 +505,7 @@ void attempt_boot() {
         flag[i] = deobfuscate(aseiFuengleR[i], djFIehjkklIH[i]);
         flag[i+1] = 0;
     }
-    print_debug("%s\n", flag);
+    //print_debug("%s\n", flag);
     // Print boot message
     // This always needs to be printed when booting
     test_crypto();
@@ -530,7 +540,7 @@ void attempt_replace() {
             flash_simple_erase_page(FLASH_ADDR);
             flash_simple_write(FLASH_ADDR, (uint32_t*)&flash_status, sizeof(flash_entry));
 
-            print_debug("Replaced 0x%08x with 0x%08x\n", component_id_out,
+            //print_debug("Replaced 0x%08x with 0x%08x\n", component_id_out,
                     component_id_in);
             print_success("Replace\n");
             return;
