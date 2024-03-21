@@ -542,8 +542,7 @@ void attempt_replace() {
             flash_simple_erase_page(FLASH_ADDR);
             flash_simple_write(FLASH_ADDR, (uint32_t*)&flash_status, sizeof(flash_entry));
 
-            //print_debug("Replaced 0x%08x with 0x%08x\n", component_id_out,
-                    component_id_in);
+            //print_debug("Replaced 0x%08x with 0x%08x\n", component_id_out, component_id_in);
             print_success("Replace\n");
             return;
         }
